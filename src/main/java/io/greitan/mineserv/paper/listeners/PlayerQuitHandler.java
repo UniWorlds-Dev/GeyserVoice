@@ -1,13 +1,12 @@
-package io.greitan.mineserv.listeners;
+package io.greitan.mineserv.paper.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import io.greitan.mineserv.GeyserVoice;
-import io.greitan.mineserv.utils.Language;
-import io.greitan.mineserv.utils.Logger;
+import io.greitan.mineserv.paper.GeyserVoice;
+import io.greitan.mineserv.paper.utils.Language;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -26,8 +25,14 @@ public class PlayerQuitHandler implements Listener {
         Player player = event.getPlayer();
         boolean isBound = plugin.getPlayerBinds().getOrDefault(player.getName(), false);
 
-        if (plugin.isConnected() && isBound) {
-            handlePlayerDisconnect(player);
+        if (isBound) {
+            if (!plugin.usesProxy && plugin.isConnected()) {
+                handlePlayerDisconnect(player);
+            } else if (plugin.usesProxy) {
+                // this will make sure the player bind is removed on leave, even if it cannot be received...
+                // it will be set again if the player joins this server again...
+                plugin.getPlayerBinds().remove(player.getName());
+            }
         }
     }
 
@@ -38,14 +43,14 @@ public class PlayerQuitHandler implements Listener {
         String disconnectMessage = Language.getMessage(lang, "player-disconnect-success").replace("$player", playerName);
 
         if (isDisconnected) {
-            Logger.info(disconnectMessage);
+            plugin.Logger.info(disconnectMessage);
 
             boolean sendDisconnectMessage = plugin.getConfig().getBoolean("config.voice.send-disconnect-message");
             if (sendDisconnectMessage) {
                 Bukkit.broadcast(Component.text(disconnectMessage).color(NamedTextColor.YELLOW));
             }
         } else {
-            Logger.error(Language.getMessage(lang, "player-disconnect-failed").replace("$player", playerName));
+            plugin.Logger.error(Language.getMessage(lang, "player-disconnect-failed").replace("$player", playerName));
         }
     }
 }

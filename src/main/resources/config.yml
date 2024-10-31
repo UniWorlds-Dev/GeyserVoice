@@ -4,8 +4,12 @@ config:
   lang: "en"                     # Language used in the plugin
 
   host: localhost                # Server host the plugin interacts with
-  port: 9051                     # Port for server interaction
+  port: 9050                     # Port for server interaction
   server-key: "key"              # Server key for authentication
+
+  auto-reconnect: true           # Enable/disable auto reconnection when connection lost
+
+  server-behind-proxy: false     # Is this paper server behind a proxy (velocity/bungeecord) with this plugin installed: true/false
 
   voice:
     proximity-distance: 30       # Maximum distance for voice interaction
@@ -17,10 +21,11 @@ config:
 
     send-connect-message: true         # Send message when a player connects to voice chat
     send-disconnect-message: true      # Send message when a player disconnects from voice chat
+    send-connection-lost-message: true # Send message when the connection is lost from the voice chat server
     
     # The speed and accuracy of player positioning in voice chat depends on this. 
     # If you don't get errors - don't change this.
     position-task-interval: 1            # Interval for player position update task in ticks
 
   players:
-    AlphaBaqpla: "228"          # Some plugin data or values related to players
+    AlphaBaqpla: 228            # Some plugin data or values related to players

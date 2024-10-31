@@ -1,7 +1,8 @@
-package io.greitan.mineserv.utils;
+package io.greitan.mineserv.paper.utils;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
+
+import io.greitan.mineserv.paper.GeyserVoice;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,15 +16,16 @@ public class Language {
     private static final Map<String, YamlConfiguration> languageConfigs = new HashMap<>();
     private static String defaultLanguage = "en";
 
-    public static void init(Plugin plugin)
+    public static void init(GeyserVoice plugin)
     {
         File languageFolder = new File(plugin.getDataFolder(), "locale");
 
         if (!languageFolder.exists())
         {
             languageFolder.mkdirs();
-            copyResource(plugin, "locale/en.yml", new File(languageFolder, "en.yml"));
-            copyResource(plugin, "locale/ru.yml", new File(languageFolder, "ru.yml"));
+            plugin.saveResource("locale/en.yml");
+            plugin.saveResource("locale/ru.yml");
+            plugin.saveResource("locale/nl.yml");
         }
 
         loadLanguages(languageFolder.getAbsolutePath());
@@ -35,10 +37,8 @@ public class Language {
 
         if (languageFolder.exists() && languageFolder.isDirectory())
         {
-
             for (File file : languageFolder.listFiles())
             {
-
                 if (file.getName().endsWith(".yml"))
                 {
                     String language = file.getName().replace(".yml", "");
@@ -46,20 +46,6 @@ public class Language {
                     languageConfigs.put(language, config);
                 }
             }
-        }
-    }
-
-    private static void copyResource(Plugin plugin, String resourceName, File destination)
-    {
-        try (InputStream inputStream = plugin.getResource(resourceName))
-        {
-            if (inputStream != null)
-            {
-                Files.copy(inputStream, destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            }
-        } catch (IOException e)
-        {
-            e.printStackTrace();
         }
     }
 
