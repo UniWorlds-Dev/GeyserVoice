@@ -1,10 +1,9 @@
-package io.greitan.mineserv.commands;
+package io.greitan.mineserv.paper.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Collections;
+import java.lang.NumberFormatException;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,9 +15,8 @@ import org.bukkit.util.StringUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-import io.greitan.mineserv.GeyserVoice;
-import io.greitan.mineserv.utils.Language;
-import io.greitan.mineserv.utils.Logger;
+import io.greitan.mineserv.paper.GeyserVoice;
+import io.greitan.mineserv.paper.utils.Language;
 
 public class VoiceCommand implements CommandExecutor, TabCompleter {
 
@@ -45,8 +43,22 @@ public class VoiceCommand implements CommandExecutor, TabCompleter {
                 // Bind command - bind player.
                 if (args[0].equalsIgnoreCase("bind") && player.hasPermission("voice.bind") && isConnected)
                 {
-                    if(Objects.nonNull(args[1])){
-                        Boolean isBound = plugin.bind(args[1], player);
+                    if(args.length >= 2 && Objects.nonNull(args[1]))
+                    {
+                        int bindKey;
+                        try {
+                            bindKey = Integer.parseInt(args[1]);
+                        } catch (NumberFormatException e) {
+                            player.sendMessage(Component.text(Language.getMessage(lang, "cmd-invalid-args")).color(NamedTextColor.RED));
+                            return true;
+                        }
+                        /*
+                        if (bindKey == 0) {
+                            player.sendMessage("Here is your open key!");
+                            return;
+                        }
+                        */
+                        Boolean isBound = plugin.bind(bindKey, player);
                         if(isBound){
                             player.sendMessage(Component.text(Language.getMessage(lang, "cmd-bind-connect")).color(NamedTextColor.AQUA));
                         } else {
@@ -81,13 +93,19 @@ public class VoiceCommand implements CommandExecutor, TabCompleter {
                 // Connect command - connect to the VoiceCraft server.
                 else if (args[0].equalsIgnoreCase("connect") && player.hasPermission("voice.connect"))
                 {
-                    Boolean force = Boolean.valueOf(args[1]);
+                    if(Objects.nonNull(args[1])){
+                        Boolean force = Boolean.valueOf(args[1]);
 
-                    Boolean connected = plugin.connect(force);
-                    if(connected){
-                        player.sendMessage(Component.text(Language.getMessage(lang, "plugin-connect-connect")).color(NamedTextColor.AQUA));
-                    } else {
-                        player.sendMessage(Component.text(Language.getMessage(lang, "plugin-connect-disconnect")).color(NamedTextColor.RED));
+                        Boolean connected = plugin.connect(force);
+                        if(connected){
+                            player.sendMessage(Component.text(Language.getMessage(lang, "plugin-connect-connect")).color(NamedTextColor.AQUA));
+                        } else {
+                            player.sendMessage(Component.text(Language.getMessage(lang, "plugin-connect-disconnect")).color(NamedTextColor.RED));
+                        }
+                    }
+                    else
+                    {
+                        player.sendMessage(Component.text(Language.getMessage(lang, "cmd-invalid-args")).color(NamedTextColor.RED));
                     }
                 }
                 // Reload command - reload the configs.
@@ -101,7 +119,7 @@ public class VoiceCommand implements CommandExecutor, TabCompleter {
                     int proximityDistance = 1;
                     Boolean proximityToggle = true;
                     Boolean voiceEffects = true;
-            
+
                     plugin.updateSettings(proximityDistance, proximityToggle, voiceEffects);
                 }
                 // Command select invalid.
@@ -112,16 +130,16 @@ public class VoiceCommand implements CommandExecutor, TabCompleter {
             }
         }
         // Commands runned by console.
-        else if(args.length >= 1) 
+        else if(args.length >= 1)
         {
             // Reload command - reload the configs.
             if (args[0].equalsIgnoreCase("reload"))
             {
                 plugin.reload();
-                Logger.log(Component.text(Language.getMessage(lang, "cmd-reload")).color(NamedTextColor.GREEN));
-            } 
+                plugin.Logger.log(Component.text(Language.getMessage(lang, "cmd-reload")).color(NamedTextColor.GREEN));
+            }
             // Command not for console.
-            else 
+            else
             {
                 sender.sendMessage(Component.text(Language.getMessage(lang, "cmd-not-player")).color(NamedTextColor.RED));
             }
@@ -136,36 +154,31 @@ public class VoiceCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0)
-        {
-            return Collections.emptyList();
-        }
+        List<String> completions = List.of();
 
-        List<String> completions = new ArrayList<>();
-    
         // Main command arguments.
         if (args.length == 1)
         {
-            List<String> options = Arrays.asList("bind", "setup", "connect", "reload");
+            List<String> options = List.of("bind", "setup", "connect", "reload");
             StringUtil.copyPartialMatches(args[0], options, completions);
         }
-    
+
         // Setup command arguments.
         if (args.length == 2 && args[0].equalsIgnoreCase("setup"))
         {
-            List<String> options = Arrays.asList("host port key");
+            List<String> options = List.of("host port key");
             StringUtil.copyPartialMatches(args[1], options, completions);
         }
 
         // Connect command arguments.
         if (args.length == 2 && args[0].equalsIgnoreCase("connect"))
         {
-            List<String> options = Arrays.asList("true", "false");
+            List<String> options = List.of("true", "false");
             StringUtil.copyPartialMatches(args[1], options, completions);
         }
-    
+
         Collections.sort(completions);
         return completions;
     }
-    
+
 }

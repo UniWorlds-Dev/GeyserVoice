@@ -1,16 +1,17 @@
-package io.greitan.mineserv.utils;
+package io.greitan.mineserv.paper.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 
-import io.greitan.mineserv.GeyserVoice;
+import io.greitan.mineserv.common.utils.BaseLogger;
+import io.greitan.mineserv.paper.GeyserVoice;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
-public class Logger {
+public class PaperLogger extends BaseLogger {
 
-    public static void log(Component msg) {
+    public void log(Component msg) {
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
         Component coloredLogo = Component.text("[")
             .color(NamedTextColor.WHITE)
@@ -26,7 +27,7 @@ public class Logger {
         console.sendMessage(coloredLogo);
     }
 
-    public static void info(String msg) {
+    public void info(String msg) {
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
         Component coloredLogo = Component.text("[")
             .color(NamedTextColor.WHITE)
@@ -42,7 +43,7 @@ public class Logger {
         console.sendMessage(coloredLogo);
     }
 
-    public static void warn(String msg) {
+    public void warn(String msg) {
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
         Component coloredLogo = Component.text("[")
             .color(NamedTextColor.WHITE)
@@ -57,8 +58,8 @@ public class Logger {
 
         console.sendMessage(coloredLogo);
     }
-    
-    public static void error(String msg) {
+
+    public void error(String msg) {
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
         Component coloredLogo = Component.text("[")
             .color(NamedTextColor.WHITE)
@@ -74,7 +75,7 @@ public class Logger {
         console.sendMessage(coloredLogo);
     }
 
-    public static void debug(String msg) {
+    public void debug(String msg) {
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
         Boolean isDebug = GeyserVoice.getInstance().getConfig().getBoolean("config.debug");
         if(isDebug){

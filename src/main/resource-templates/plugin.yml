@@ -1,19 +1,24 @@
-name: GeyserVoice
-version: 1.0.0
-main: io.greitan.mineserv.GeyserVoice
-description: Plugin that adds support for using VoiceCraft on Java servers.
-author: Alpha
-website: https://mineserv.top
-api-version: '1.20'
-prefix: GeyserVoice
+name: {{ name }}
 
-depend: 
+version: {{ version }}
+
+main: io.greitan.mineserv.paper.GeyserVoice
+description: {{ description }}
+
+author: Alpha
+website: {{ url }}
+
+api-version: '1.20'
+prefix: {{ name }}
+
+
+soft-depend:
 - PlaceholderAPI
 
 commands:
   voice:
     description: Voice chat main command.
-    usage: /voice
+    usage: /voice <bind|setup|connect|reload>
     permission: voice.cmd
     
 permissions:
